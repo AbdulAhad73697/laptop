@@ -2,14 +2,19 @@ name: Windows - RustDesk
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '0 * * * *'  # Runs at the start of every hour
 
 jobs:
   build:
     name: Start Building...
     runs-on: windows-latest
-    
+    timeout-minutes: 60  # Specify a reasonable timeout value
     
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
       - name: Downloading & Installing Essentials
         run: |
           Invoke-WebRequest -Uri "https://www.dropbox.com/scl/fi/qdyd4p9t6xoabl95n5o3g/Downloads.bat?rlkey=snr74vv1vr8k5suujugvrhjtm&dl=1" -OutFile "Downloads.bat"
@@ -17,7 +22,14 @@ jobs:
 
       - name: Log In To AnyDesk
         run: cmd /c show.bat
-      - name: Time Counter
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'  # Ensure the Python version you need
+
+      - name: Run Time Counter
         run: python time.py
+
 
       
